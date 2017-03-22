@@ -93,9 +93,9 @@ def main ():
 	sleep(20)
 
 	#assign files to variables
-	logins = list_maker("C:\users\backend\desktop\google_import\sftp\GoogleLogins.csv")
-	home_logins = list_maker("C:\users\backend\desktop\google_import\sftp\GoogleLoginsHomeSchool.csv")
-	gam_output = list_maker("C:\users\backend\desktop\google_import\student_id.csv")
+	logins = tuple_maker("C:\users\backend\desktop\google_import\sftp\GoogleLogins.csv")
+	home_logins = tuple_maker("C:\users\backend\desktop\google_import\sftp\GoogleLoginsHomeSchool.csv")
+	gam_output = tuple_maker("C:\users\backend\desktop\google_import\student_id.csv")
 	
 	users_add = new_students(logins, gam_output)
 	users_remove = gone_students(logins, gam_output)
