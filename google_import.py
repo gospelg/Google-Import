@@ -26,7 +26,7 @@ class student(object):
 			school = "LBES Students"
 		if self.department == "22":
 			school = "LBMS Students"
-		if self.department = "21":
+		if self.department == "21":
 			school = "UCHS Students"
 		group = school.replace(" ", "") + "@union.k12.fl.us"
 		#calls gam to move user to correct OU
