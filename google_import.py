@@ -13,10 +13,8 @@ class student(object):
 		self.grade = grade
 		self.department = department
 	
-	student_data = [self.email, self.firstname, self.lastname, self.password, self.id, self.grade]
-	
 	def add_user(self):
-		gam_switch = " ".join(student_data)
+		gam_switch = " ".join([self.email, self.firstname, self.lastname, self.password, self.s_id, self.grade])
 		#creates the user in google
 		call("C:\Users\crosbyg\Desktop\gam-64\gam.exe create user {0}".format(gam_switch))
 		
@@ -61,7 +59,6 @@ def new_students(nefec, google):
 			users_add["new"].append(item)
 	return users_add
 	
-
 def gone_students(nefec, google):
 	deactivate = []
 	for student in google:
