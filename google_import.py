@@ -4,17 +4,16 @@ from time import sleep
 
 class student(object):
 			
-	def __init__(self, email, lastname, firstname, password, s_id, ou, grade, department):
+	def __init__(self, email, lastname, firstname, password, s_id, grade, department):
 		self.email = email
 		self.lastname = lastname
 		self.firstname = firstname
 		self.password = password
 		self.s_id = s_id
-		self.ou = ou
 		self.grade = grade
 		self.department = department
 	
-	student_data = [self.email, self.firstname, self.lastname, self.password, self.id, self.ou, self.grade]
+	student_data = [self.email, self.firstname, self.lastname, self.password, self.id, self.grade]
 	
 	def add_user(self):
 		gam_switch = " ".join(student_data)
@@ -76,7 +75,18 @@ def gone_students(nefec, google):
 			pass
 				
 	return deactivate
-	
+
+def import_students(students):
+	for kid in students:
+		i = student(kid[2], kid[1], kid[0], kid[3], kid[11], kid[5], kid[4])
+		i.add_user()
+		i.move_user()
+		
+def remove_students(students):
+	for kid in students:
+		i = student(kid[2], kid[1], kid[0], kid[3], kid[11], kid[5], kid[4])
+		i.remove_user()
+			
 def main (): 
 	#makes gam print out a csv of all the users in GAD, with all fields to a csv
 	call("C:\Users\backend\Desktop\gam-64\gam.exe print users suspended custom UCSDstudent > C:\users\backend\desktop\google_import\student_id.csv")
@@ -89,6 +99,11 @@ def main ():
 	
 	users_add = new_students(logins, gam_output)
 	users_remove = gone_students(logins, gam_output)
+	
+	import_students(users_add)
+	remove_students(users_remove)
+	
+main()
 	
 	
 	
