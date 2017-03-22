@@ -4,12 +4,12 @@ from time import sleep
 
 class student(object):
 			
-	def __init__(self, email, lastname, firstname, password, id, ou, grade, department):
+	def __init__(self, email, lastname, firstname, password, s_id, ou, grade, department):
 		self.email = email
 		self.lastname = lastname
 		self.firstname = firstname
 		self.password = password
-		self.id = id
+		self.s_id = s_id
 		self.ou = ou
 		self.grade = grade
 		self.department = department
