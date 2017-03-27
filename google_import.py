@@ -1,3 +1,9 @@
+#####################################################################################
+#                         Garrett's super duper google importer			    #
+#				  version 2.1					    #
+#	Read me located on DC2 "C:\users\backend\google_import\readme.txt	    #
+#####################################################################################
+
 import csv
 from subprocess import call
 import time
