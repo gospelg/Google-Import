@@ -1,7 +1,7 @@
 #####################################################################################
-#                         Garrett's super duper google importer			    #
-#				  version 2.2					    #
-#	Read me located on DC2 "C:\users\backend\google_import\readme.txt	    #
+#                         Garrett's super duper google importer			   			#
+#				 					 version 2.2					    			#
+#			Read me located on DC2 "C:\users\backend\google_import\readme.txt	    #
 #####################################################################################
 
 import csv
