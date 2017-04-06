@@ -1,11 +1,11 @@
 #####################################################################################
-#                         Garrett's super duper google importer			   			#
-#				 					 version 2.2					    			#
-#			Read me located on DC2 "C:\users\backend\google_import\readme.txt	    #
+#                         Garrett's super duper google importer	        	        #
+#				                    version 2.2.1				                    #
+#		     Read me located on DC2 "C:\users\backend\google_import\readme.txt      #
 #####################################################################################
 
-import csv
 from subprocess import call
+import csv
 import time
 import logging
 
@@ -54,7 +54,7 @@ class student(object):
 		
 	def unsuspend(self):
 		try:
-			Call(r"C:\Users\backend\Desktop\gam-64\gam.exe update user {0} suspended off".format(self.email), shell=True)
+			call(r"C:\Users\backend\Desktop\gam-64\gam.exe update user {0} suspended off".format(self.email), shell=True)
 			logging.info("Reactivated account for {0}".format(self.email))
 		except:
 			logging.warning("Could not reactivate account for {0}".format(self.email))
