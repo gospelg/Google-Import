@@ -236,7 +236,7 @@ If you remember, students should be a list of emails. Here we use call() to send
      
 Here we have a try: statement. This basically is means, do this, but if you try and get an error, then do whatever is in the except: statement instead. This helps with logging, as you can see, we can log that it was successful if it was, or log that it failed if it failed.
      
-     ********************************************************************************************************************************
+   ********************************************************************************************************************************
      
 PART 3
 THE CLASS
