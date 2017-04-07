@@ -1,6 +1,6 @@
 #####################################################################################
 #                         Garrett's super duper google importer                     #
-#                                     version 2.3.2                                 #
+#                                     version 2.3.3                                 #
 #         Read me located on DC2 "C:\users\backend\google_import\readme.txt         #
 #####################################################################################
 
@@ -28,7 +28,7 @@ class student(object):
         gam_switch = " ".join([self.email, self.firstname, self.lastname,
                                self.password, self.s_id, self.grade])
         try:
-            call("{0} create user {1}".format(self.gam gam_switch), shell=True)
+            call("{0} create user {1}".format(self.gam, gam_switch), shell=True)
             logging.info("Created user {0}"
                          .format(self.email))
         except:
@@ -48,12 +48,12 @@ class student(object):
             #calls gam to move user to correct OU
             gam_input = ('{0} update org "/Chromebooks'
                          '/Student/{1}" add users {2}'
-                         .format(self.gam school, self.email))
+                         .format(self.gam, school, self.email))
             call(gam_input, shell=True)
             #calls gam to add user to correct group
             gam_input1 = ("{0} update group {1} "
                           "add member user {2}"
-                          .format(self.gam group, self.email))
+                          .format(self.gam, group, self.email))
             call(gam_input1, shell=True)
             logging.info("Sucessfully moved user {0} to new group and OU"
                          .format(self.email))
@@ -64,7 +64,7 @@ class student(object):
     def unsuspend(self):
         try:
             gam_input = ("{0} update user {1} suspended off"
-                         .format(self.gam self.email))
+                         .format(self.gam, self.email))
             call(gam_input, shell=True)
             logging.info("Reactivated account for {0}"
                          .format(self.email))
@@ -75,7 +75,7 @@ class student(object):
     def change_password(self):
         try:
             gam_input = ("{0} update user {1} password {2}"
-                         .format(self.gam self.email, self.password))
+                         .format(self.gam, self.email, self.password))
             call(gam_input, shell=True)
             logging.info("Successfully updated password for {0}"
                          .format(self.email))
