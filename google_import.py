@@ -1,6 +1,6 @@
 #####################################################################################
 #                         Garrett's super duper google importer                     #
-#                                     version 2.3.3                                 #
+#                                     version 2.3.4                                 #
 #         Read me located on DC2 "C:\users\backend\google_import\readme.txt         #
 #####################################################################################
 
@@ -25,8 +25,11 @@ class student(object):
 
     def add_user(self):
         #this is all the fields gam wants to create a new user
-        gam_switch = " ".join([self.email, self.firstname, self.lastname,
-                               self.password, self.s_id, self.grade])
+        gam_switch = " ".join([self.email, "firstname", self.firstname, 
+                               "lastname", self.lastname, "password",
+                               self.password, "UCSDstudent.id", self.s_id,
+                               "organization department", self.department,
+                               "description", self.grade, "primary"])
         try:
             call("{0} create user {1}".format(self.gam, gam_switch), shell=True)
             logging.info("Created user {0}"
