@@ -1,6 +1,6 @@
 #####################################################################################
 #                         Garrett's super duper google importer                     #
-#                                     version 3.0.0                                 #
+#                                     version 3.0.2                                 #
 #         Read me located on DC2 "C:\users\backend\google_import\readme.txt         #
 #####################################################################################
 
@@ -151,18 +151,20 @@ def gam_master(master_file):
                         "Aborting to prevent errors...")
         exit()
     #call gam to run a batch operation on master_file and capture stdout
-    p1 = subprocess.Popen(['gam batch', master_file], 
+    p1 = subprocess.Popen(['gam', 'batch', master_file], 
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
     out1, err1 = p1.communicate()
-    logging.info(out1, err1)
+    logging.info(out1)
+    logging.warning(err1)
     #set gam to run 20 update password commands at once
     subprocess.call('set GAM_THREADS=20', shell=True)
-    p2 = subprocess.Popen(['gam batch', pass_file], 
+    p2 = subprocess.Popen(['gam', 'batch', pass_file], 
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
     out2, err2 = p2.communicate()
-    logging.info(out2, err2)
+    logging.info(out2)
+    logging.warning(err2)
 
 def main ():
 
