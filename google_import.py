@@ -1,6 +1,6 @@
 #####################################################################################
 #                         Garrett's super duper google importer                     #
-#                                     version 2.3.4                                 #
+#                                     version 3.0.0                                 #
 #         Read me located on DC2 "C:\users\backend\google_import\readme.txt         #
 #####################################################################################
 
