@@ -145,7 +145,7 @@ def gam_master(master_file):
     pass_file = r'C:\users\backend\desktop\google_import\passwords.txt'
     #make sure gam runs these commands one at a time, in order
     try:
-        subprocess.call('set GAM_THREADS=1')
+        subprocess.call('set GAM_THREADS=1', shell=True)
     except:
         logging.warning("Could not set gam to single thread"
                         "Aborting to prevent errors...")
@@ -157,7 +157,7 @@ def gam_master(master_file):
     out1, err1 = p1.communicate()
     logging.info(out1, err1)
     #set gam to run 20 update password commands at once
-    subprocess.call('set GAM_THREADS=20')
+    subprocess.call('set GAM_THREADS=20', shell=True)
     p2 = subprocess.Popen(['gam batch', pass_file], 
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
