@@ -1,6 +1,6 @@
 #####################################################################################
 #                         Garrett's super duper google importer                     #
-#                                     version 3.0.2                                 #
+#                                     version 3.0.3                                 #
 #         Read me located on DC2 "C:\users\backend\google_import\readme.txt         #
 #####################################################################################
 
@@ -158,7 +158,10 @@ def gam_master(master_file):
     logging.info(out1)
     logging.warning(err1)
     #set gam to run 20 update password commands at once
-    subprocess.call('set GAM_THREADS=20', shell=True)
+    try:
+        subprocess.call('set GAM_THREADS=20', shell=True)
+    except:
+        logging.warning("Could not set GAM to multi-threaded mode...proceeding)
     p2 = subprocess.Popen(['gam', 'batch', pass_file], 
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
