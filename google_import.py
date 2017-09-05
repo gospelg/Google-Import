@@ -1,6 +1,6 @@
 #####################################################################################
 #                         Garrett's super duper google importer                     #
-#                                     version 3.0.3                                 #
+#                                     version 3.1.1                                 #
 #         Read me located on DC2 "C:\users\backend\google_import\readme.txt         #
 #####################################################################################
 
@@ -78,10 +78,10 @@ class student(object):
         with open(pass_file, 'a') as f:
             f.write(gam_input)
 
-def update_passwords(students, master_file):
+def update_passwords(students):
     for kid in students:
         i = student(kid[2], kid[1], kid[0], kid[3], kid[11],
-                    kid[5], kid[4], master_file)
+                    kid[5], kid[4], 0) #no need for the master_file atribute here
         i.change_password()
 
 #item[11] is the student id, x[3] is also student id, and x[1] is suspended, true or false.
@@ -178,6 +178,14 @@ def gam_master(master_file):
     out2, err2 = p2.communicate()
     logging.info(out2)
     logging.warning(err2)
+    
+"""There's no real need to make a new password file everytime this runs,
+    or really keep a record of the commands it ran to update passwords.
+    These two lines simply delete the contents of pass_file so every command 
+    the file starts fresh everytime it runs.""" 
+                        
+    cleanup = open(pass_file, 'w')
+    cleanup.close
 
 def main ():
 
