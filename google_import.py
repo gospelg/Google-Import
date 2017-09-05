@@ -9,6 +9,15 @@ import csv
 import time
 import logging
 
+""" The class basically has all the attributes of a student, and a few functions.
+The functions basically generate commands to pass to GAM. The put them into two txt
+files, master file and passwords. The master file has a batch of commands for moving
+users and adding and deleting them and stuff like that. The passwords file is a list
+of commands to update everyones passwords. After all this the gam_master() function 
+calls gam and points to these two files for the list of commands it should execute.
+"""
+
+
 #create a student object. All students have these several attributes, gleaned from the nefec csv
 class student(object):
 
@@ -32,7 +41,8 @@ class student(object):
                                "description", self.grade, "primary"])
         with open(self.master_file, 'a') as f:
             f.write("gam create user {0}\n".format(gam_switch))
-
+    
+    #uses department field, which is school number
     def move_user(self):
         school = ""
         if self.department == "0031":
@@ -42,13 +52,13 @@ class student(object):
         if self.department == "0021":
             school = "UCHS Students"
         group = school.replace(" ", "") + "@union.k12.fl.us"
-        #calls gam to move user to correct OU
+        #tells gam to move user to correct OU
         gam_input = ('gam update org "/Chromebooks'
                      '/Student/{0}" add users {1}\n'
                      .format(school, self.email))
         with open(self.master_file, 'a') as f:
             f.write(gam_input)
-        #calls gam to add user to correct group
+        #ctells gam to add user to correct group
         gam_input1 = ("gam update group {0} "
                       "add member user {1}\n"
                       .format(group, self.email))
