@@ -1,6 +1,6 @@
 #####################################################################################
 #                         Garrett's super duper google importer                     #
-#                                     version 3.1.2                                 #
+#                                     version 3.1.3                                 #
 #         Read me located on DC2 "C:\users\backend\google_import\readme.txt         #
 #####################################################################################
 
@@ -156,6 +156,7 @@ def gam_master(master_file):
     #make sure gam runs these commands one at a time, in order
     try:
         subprocess.call('set GAM_THREADS=1', shell=True)
+        logging.info("Set gam to single threaded mode.")
     except:
         logging.warning("Could not set gam to single thread"
                         "Aborting to prevent errors...")
@@ -170,20 +171,22 @@ def gam_master(master_file):
     #set gam to run 20 update password commands at once
     try:
         subprocess.call('set GAM_THREADS=20', shell=True)
+        logging.info("Set gam to multi threaded mode.")
     except:
-        logging.warning("Could not set GAM to multi-threaded mode...proceeding)
+        logging.warning("Could not set GAM to multi-threaded mode...proceeding")
     p2 = subprocess.Popen(['gam', 'batch', pass_file], 
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
     out2, err2 = p2.communicate()
     logging.info(out2)
     logging.warning(err2)
-    
-"""There's no real need to make a new password file everytime this runs,
+
+    """There's no real need to make a new password file everytime this runs,
     or really keep a record of the commands it ran to update passwords.
     These two lines simply delete the contents of pass_file so every command 
-    the file starts fresh everytime it runs.""" 
-                        
+    the file starts fresh everytime it runs.
+    """ 
+   
     cleanup = open(pass_file, 'w')
     cleanup.close
 
@@ -196,12 +199,14 @@ def main ():
     master_file = r"{0}\master\{1}master.txt".format(root_dir, date)
 
     #makes gam print out a csv of all the users in GAD, with all fields to a csv
+    logging.info("Exporting users from google...")
     gam_sheet = (r"C:\Users\backend\Desktop\gam-64\gam.exe "
                  r"print users suspended custom UCSDstudent "
                  r"> C:\users\backend\desktop\google_import\student_id.csv")
     subprocess.call(gam_sheet, shell=True)
 
     #assign files to variables
+    logging.info("Making lists...")
     logins = list_maker((r"{0}\sftp\GoogleLogins.csv").format(root_dir))
     home_logins = list_maker((r"{0}\sftp\GoogleLoginsHomeSchool.csv").format(root_dir))
     gam_output = tuple(list_maker((r"{0}\student_id.csv").format(root_dir)))
@@ -215,6 +220,7 @@ def main ():
     remove_students(users_remove, master_file)
     update_passwords(logins)
     
+    logging.info("Staring batch operations...")
     gam_master(master_file)
 
 main()
