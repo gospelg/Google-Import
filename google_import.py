@@ -1,7 +1,7 @@
 #####################################################################################
 #                         Garrett's super duper google importer                     #
-#                                     version 4.0.0                                 #
-#         Read me located in addplication's root directory.                         #
+#                                     version 4.0.1                                 #
+#                      Read me located in application's root directory.             #
 #####################################################################################
 
 import subprocess
@@ -57,7 +57,6 @@ class student(object):
             school = "LBMS Students"
         if self.department == "0021":
             school = "UCHS Students"
-        group = school.replace(" ", "") + "@union.k12.fl.us"
         #tells gam to move user to correct OU
         gam_input = ('gam update org "/Chromebooks'
                      '/Student/{0}" add users {1}\n'
@@ -66,7 +65,8 @@ class student(object):
             f.write(gam_input)
         #tells gam to add user to correct group
         #there are no groups for elementary school kids, so exclude them
-        if school != "LBES Students":
+        if self.department != "0031":
+            group = school.replace(" ", "") + "@union.k12.fl.us"
             gam_input1 = ("gam update group {0} "
                           "add member user {1}\n"
                           .format(group, self.email))
@@ -223,7 +223,7 @@ def sftp_ops(root_dir, date):
     )
     
     #set up sftp log
-    pm.util.log_to_file("{0}_sftp_log")
+    pm.util.log_to_file("logs\\{0}_sftp_log").format(date)
     
     transport = pm.Transport((host, port))
     transport.connect(username=user, password=password)
