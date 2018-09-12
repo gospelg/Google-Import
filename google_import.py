@@ -1,6 +1,6 @@
 #####################################################################################
 #                         Garrett's super duper google importer                     #
-#                                     version 4.0.1                                 #
+#                                     version 4.1.3                                 #
 #                      Read me located in application's root directory.             #
 #####################################################################################
 
@@ -24,7 +24,7 @@ calls gam and points to these two files for the list of commands it should execu
 class student(object):
 
     def __init__(self, email, lastname, firstname, password,
-                 s_id, grade, department, master_file, password_file):
+                 s_id, grade, department, master_file, google_email):
         self.email = email
         self.lastname = lastname
         self.firstname = firstname
@@ -33,15 +33,13 @@ class student(object):
         self.grade = grade
         self.department = department
         self.master_file = master_file
-        self.password_file = password_file
-
+        self.google_email = google_email
+    
     def add_user(self):
-        #this is all the fields gam wants to create a new user
+            #this is a all the stuff gam needs to make a new user accounts
         gam_switch = " ".join([self.email, "firstname", self.firstname, 
                                "lastname", self.lastname, "password",
-                               self.password, "UCSDstudent.id", self.s_id,
-                               "organization department", self.department,
-                               "description", self.grade, "primary"])
+                               self.password, "UCSDstudent.id", self.s_id]) 
         with open(self.master_file, 'a') as f:
             f.write("gam create user {0}\n".format(gam_switch))
     
@@ -75,64 +73,82 @@ class student(object):
 
     def unsuspend(self):
         gam_input = ("gam update user {0} suspended off\n"
-                     .format(self.email))
+                     .format(self.google_email))
         with open(self.master_file, 'a') as f:
             f.write(gam_input)
             
-    def change_password(self):
-        password_file = self.password_file
-        gam_input = ("gam update user {0} password {1}\n"
-                     .format(self.email, self.password))
-        with open(password_file, 'a') as f:
-            f.write(gam_input)
+    def update_user(self):
+        #gam wants username without the email domain, so we slice off @union.k12.fl.us (16 characters from end, or [:-16]
+        username = self.email[:-16]
+        gam_switch = " ".join([self.google_email, "firstname", self.firstname, 
+                               "lastname", self.lastname, "password",
+                               self.password, "UCSDstudent.id", self.s_id,
+                               "username", username])
+        with open(self.master_file, 'a') as f:
+            f.write("gam update user {0}\n".format(gam_switch))
+        #if email was updated, google turns the old email into an alias. We want to delete it
+        if self.google_email != self.email:
+            with open(self.master_file, 'a') as f:
+                f.write("gam delete alias {0}\n".format(self.google_email))
+        else:
+            None
 
-def update_passwords(students, passwords):
-    for kid in students:
-        i = student(kid[2], kid[1], kid[0], kid[3], kid[11],
-                    kid[5], kid[4], 0, passwords) #no need for the master_file atribute here
-        i.change_password()
-
-#item[11] is the student id, x[3] is also student id, and x[1] is suspended, true or false.
+#item[11] is the student id, x[4] is also student id, and x[1] is suspended, true or false 
+#when added to the lists, we append x[0] which is the email associated with student id in google
 def new_students(nefec, google):
     users_add = {"new":[], "unsuspend": []}
+    users_update = []
+    #we don't want to update users in this ou
+    unmod_ou = "/Chromebooks/Student/UCHS Students/Help Desk"
     for item in nefec:
         for x in google:
-            if item[11] == x[3] and x[1] == "False":
-                break
-            if item[11] == x[3] and x[1] == "True":
+            if item[11] == x[4] and x[1] == "False": 
+                if x[3] != unmod_ou:
+                    item.append(x[0])
+                    users_update.append(item)
+                    break
+                else:
+                    break
+            if item[11] == x[4] and x[1] == "True":
+                item.append(x[0])
                 users_add["unsuspend"].append(item)
                 break
         else:
             users_add["new"].append(item)
-    return users_add
+    return users_add, users_update
 
-#student[3] is student id field. Item[11] is student id in the nefec csv
+#student[4] is student id field. Item[11] is student id in the nefec csv
 #If there is nothing in this field, the function leaves it alone. #student[1] is suspended or not.
 def gone_students(nefec, google):
     deactivate = []
     for student in google:
-        if student[3] != "" and student[1] == "False":
+        if student[4] != "" and student[1] == "False":
             for item in nefec:
-                if student[3] in item[11]:
+                if student[4] in item[11]:
                     break
             else:
                 deactivate.append(student[0])
     return deactivate
 
 #arguement is a dictionary, as exported from new students function.
-# 0 is a placeholder for password_file arg, which isn't needed here
+# 0 is a placeholder for google_email, which doesn't exist for new students yet
 def import_students(students, master_file):
-    for kid in students["new"]:
+    for kid in students[0]["new"]:
         i = student(kid[2], kid[1], kid[0], kid[3], kid[11], 
                     kid[5], kid[4], master_file, 0)
         i.add_user()
         i.move_user()
-    for kid in students["unsuspend"]:
+    for kid in students[0]["unsuspend"]:
         i = student(kid[2], kid[1], kid[0], kid[3], kid[11], 
-                    kid[5], kid[4], master_file, 0)
+                   kid[5], kid[4], master_file, kid[12])
         i.unsuspend()
+        i.update_user()
         i.move_user()
-
+    for kid in students[1]:
+        i = student(kid[2], kid[1], kid[0], kid[3], kid[11], 
+                    kid[5], kid[4], master_file, kid[12])
+        i.update_user()
+        i.move_user()
 #suspends user. Did not do this through class, because the only attribute needed is email.
 def remove_students(students, master_file):
     for kid in students:
@@ -145,7 +161,7 @@ def remove_students(students, master_file):
                       .format(kid))
         with open(master_file, 'a') as f:
             f.write(gam_input1)
-
+            
 #converts csv files to tuples  so they dont have to be reopened every time they need to be accessed.
 #add double quotes to first name and last name indexes so special characters dont make gam freak
 def list_maker(file_path):
@@ -153,15 +169,15 @@ def list_maker(file_path):
         reader = csv.reader(f, delimiter=',')
         next(reader, None)
         new_list = list(reader)
-        for x in new_list:
-            x[0] = r'"{0}"'.format(x[0])
-            x[1] = r'"{0}"'.format(x[1])
         return new_list
 
 #combines homeschool logins with regular logins and turns them into one tuple
 def combiner(list1, list2):
     for item in list2:
         list1.append(item)
+    for x in list1:
+            x[0] = r'"{0}"'.format(x[0])
+            x[1] = r'"{0}"'.format(x[1])
     return tuple(list1)
 
 def gam_master(master_file, pass_file):
@@ -180,27 +196,6 @@ def gam_master(master_file, pass_file):
     out1, err1 = p1.communicate()
     logging.info(out1)
     logging.warning(err1)
-    #set gam to run 20 update password commands at once
-    try:
-        subprocess.call('set GAM_THREADS=20', shell=True)
-        logging.info("Set gam to multi threaded mode.")
-    except:
-        logging.warning("Could not set GAM to multi-threaded mode...proceeding")
-    p2 = subprocess.Popen(['gam', 'batch', pass_file], 
-                          stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE)
-    out2, err2 = p2.communicate()
-    logging.info(out2)
-    logging.warning(err2)
-
-    """There's no real need to make a new password file everytime this runs,
-    or really keep a record of the commands it ran to update passwords.
-    These two lines simply delete the contents of pass_file so every command 
-    the file starts fresh everytime it runs.
-    """ 
-   
-    cleanup = open(pass_file, 'w')
-    cleanup.close
 
 def sftp_ops(root_dir, date):
     #get sftp connection parameters from config file
@@ -217,13 +212,13 @@ def sftp_ops(root_dir, date):
     ['/Data/googleLogins/GoogleLoginsHomeSchool.csv', 
     '{0}\sftp\GoogleLoginsHomeSchool.csv'.format(root_dir)],
     ['/Data/lanSchool/ClassesByTeacherLoginName.csv', 
-    'C:\lanschool\ClassesByTeacherLoginName.csv'],
+    'C:\\lanschool\\ClassesByTeacherLoginName.csv'],
     ['/Data/lanSchool/StudentsForClassByLoginName.csv', 
-    'C:\lanschool\StudentsForClassByLoginName.csv'],
+    'C:\\lanschool\\StudentsForClassByLoginName.csv'],
     )
     
     #set up sftp log
-    pm.util.log_to_file("logs\\{0}_sftp_log").format(date)
+    pm.util.log_to_file("{0}\\sftp\\{1}_sftp_log".format(root_dir, date))
     
     transport = pm.Transport((host, port))
     transport.connect(username=user, password=password)
@@ -235,8 +230,6 @@ def sftp_ops(root_dir, date):
         sftp.get(item[0], item[1])    
     sftp.close()
     
-    
-    
 def main ():
     
     date = time.strftime("%m_%d_%Y")
@@ -247,7 +240,6 @@ def main ():
     'master{0}.txt'.format(date))
     password_file = Config.get('General', 'PasswordFile') + (
     'passwordfile.txt')
-    
     
     #ensure gam.exe is in the windows PATH var, if not figure out the path
     if Config.get('General', 'gamisinpath') == 'True':
@@ -265,7 +257,7 @@ def main ():
 
     #makes gam print out a csv of all the users in GAD, with all fields to a csv
     logging.info("Exporting users from google...")
-    gam_sheet = ('{0} print users suspended custom UCSDstudent '
+    gam_sheet = ('{0} print users suspended custom UCSDstudent ou '
                  '> {1}\student_id.csv'.format(gam, root_dir))
     subprocess.call(gam_sheet, shell=True)
     
@@ -288,10 +280,9 @@ def main ():
 
     import_students(users_add, master_file)
     remove_students(users_remove, master_file)
-    #update_passwords(logins, password_file)
-    
+ 
     logging.info("Staring batch operations...")
-    gam_master(master_file, password_file)
     
+    gam_master(master_file, password_file)
 
 main()
