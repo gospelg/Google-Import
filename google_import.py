@@ -1,7 +1,7 @@
 #####################################################################################
 #                         Garrett's super duper google importer                     #
-#                                     version 4.1.3                                 #
-#                      Read me located in application's root directory.             #
+#                                     version 4.1.3.1                               #
+#                    Read me located at github.com/gospelg/Google-Import            #
 #####################################################################################
 
 import subprocess
@@ -47,7 +47,7 @@ class student(object):
     def move_user(self):
         school = ""
         if self.department == "0031":
-            if self.grade == "KG" or "01" or "02":
+            if self.grade in ["KG", "01", "02"]:
                 school = "LBES Students/LBES Badge Login"
             else:
                 school = "LBES Students"
