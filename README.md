@@ -526,8 +526,18 @@ The last two lines simply open the passfile and erase everything. Remember we ad
 
 
 ********************************************************************************************************************************
-     
+
 PART 5
+Service
+
+Due to constant issues with Task Scheduler, I decided to instead run a very lightweight service that would kick off the import on a schedule. This is the import_service file. It has one main dependency, and that is a python class called SMWinservice. It is a class that you can inherit to build your own windows services. It is just a py file that you drop in your pythonroot\lib folder. Instructions can be found here: https://www.thepythoncorner.com/2018/08/how-to-create-a-windows-service-in-python/?doing_wp_cron=1551278840.5138919353485107421875
+
+The service itself is really simple. It runs constantly and looks at the hour. If it is not 11pm, it waits 45 minutes and checks again and repeats until the hour is 23 (11 pm). If it is, it kicks off the main google import program, and sleeps for an hour before the process begins again.
+
+
+********************************************************************************************************************************
+     
+PART 6
 IN CLOSING
 
 Section 5.1: Closing remarks
