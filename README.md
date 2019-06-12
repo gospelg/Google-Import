@@ -534,16 +534,26 @@ Due to constant issues with Task Scheduler, I decided to instead run a very ligh
 
 The service itself is really simple. It runs constantly and looks at the hour. If it is not 11pm, it waits 45 minutes and checks again and repeats until the hour is 23 (11 pm). If it is, it kicks off the main google import program, and sleeps for an hour before the process begins again.
 
+At the top of this file you have your familiar imports, then you move on to the service object, which we inherit from SMWinservice. Then we define a couple attributes, includeing the service name, the display name, and description. These three attribute show up when looking at the service in windows. Then there are two methods (functions) where we tell the service what to do when it is started and stopped. For both methods we simply change the isRunning attribute to true or false respectively. EZ pz. Lastly we have the main method. Here is where the actual logic goes. First thing it does is sets up a while loop. The condition of this loop is that the attribute isRunning has to be equal to true. So while the script hasn't been stopped, do the following:
+
+Next it gets the current time and stores it in the time variable defined on line 21. Note here that when using the time.strftime() function, you can format the output via a string arguement, which is the in the parentheses, in this case '%H'. This tells the function to just get the hour, because that is all we really need here.
+
+Then we have a simple if else control. If the hour is 23, then call the main google_importer program. Then sleep for an hour while it runs, then check the time again. This will then cause it to reevaluate the logic again, so long as isRunnning still equals true.
+
+Since it has been an hour at this point, time will no longer equal 23, which means it will instead hit the else logic. The else statement is very simple as well. Wait 45 minutes and then it sets the time variable again at which point the process repeats. It does this until the service is stopped or it is 11pm again, at which point it will call google_import again. 
+
+To maintain the service, simply open services.msc and look for the Google Student Importer service. This all runs on the Utilities server, by the way. Start the service like you normally would any other service, and stop it the same way if you ever need to.
+
 
 ********************************************************************************************************************************
      
 PART 6
 IN CLOSING
 
-Section 5.1: Closing remarks
+Section 6.1: Closing remarks
 
 That's it. That's the whole script. Hopefully I have made it somewhat less arcane, and more accessible. I would not want anyone to ever be faced with this script and decide it is easier to learn to code and write another, instead of master what has already been done. The script is super fast and efficient. GAM takes a while to run it's commands, but the actual python part of this script executes in less than a second. I feel it is very readable, and it's logic somewhat easy to follow, and this long ass readme can clear up anything not self explanatory. 
 
-Section 5.2: The Future
+Section 6.2: The Future
 
 In the future I want to make a few updates to this script, mostly in the form of new features. I would like to add some sysargs, which would allow us to run this exe with switches to modify it's behavior. Such as, I would like to add the functionality to go through every student and call the move_user method, and also a graduate function to move all graduating 4th graders to 5th grade, and all graduating 8th graders to 9th grade. We have to do this every year, it would make sense to add it to this program. As it is, this program is completely debugged and works flawlessly. It has ran everyday for many months with a total of zero errors. As far as improving it, it's pretty much there. It runs as fast as GAM can go since I added multithreading, the logging is as good as it can be or needs to be. It could probably be generalized to use an ini file the defines alot of the variables, so it can be used in other districts. Active Directory integration is also a feature I have considered. 
